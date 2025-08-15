@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { Bed } = require('../models/bed.js');
+const Bed  = require('../models/bed.js');
 
 // Get all beds
 router.get('/', async (req, res) => {
     try {
         const beds = await Bed.find();
-        res.render('beds.ejs', { beds });
+        res.render('beds.ejs', { beds, title:"Bed Management" });
     } catch (err) {
         console.error("Error fetching beds:", err);
         res.status(500).send("Internal Server Error");
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/new', (req, res) => {
-  res.render('newBed.ejs');
+  res.render('newBed.ejs', {title:"Bed Management"});
 });
 
 router.post('/', async (req, res) => {
@@ -64,7 +64,7 @@ router.get('/:id/edit', async (req, res) => {
   try {
     const bed = await Bed.findById(req.params.id);
     if (!bed) return res.status(404).send("Bed not found");
-    res.render('editBed.ejs', { bed });
+    res.render('editBed.ejs', { bed, title:"Bed Management" });
   } catch (err) {
     console.error("Error fetching bed:", err);
     res.status(500).send("Internal Server Error");

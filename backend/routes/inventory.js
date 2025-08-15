@@ -19,7 +19,8 @@ router.get('/', async (req, res) => {
       totalItems,
       lowStockItems,
       outOfStockItems,
-      recentAdditions
+      recentAdditions,
+      title: "Inventory management"
     });
   } catch (err) {
     console.error("Error fetching inventory:", err);
@@ -29,7 +30,7 @@ router.get('/', async (req, res) => {
 
 // Render Add New Item form
 router.get('/new', (req, res) => {
-  res.render('newInventory.ejs');
+  res.render('newInventory.ejs',{title: "Inventory management"});
 });
 
 // Add New Item

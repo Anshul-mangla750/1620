@@ -7,7 +7,7 @@ router.get('/', async (req, res) => {
   try {
     let data = await Queue.find();
     console.log(data);
-    res.render("index.ejs", { patients: data });
+    res.render("index.ejs", { patients: data , title:"OPD Management"});
   } catch (err) {
     console.error("Error fetching patients:", err);
     res.status(500).send("Internal Server Error");
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/new', (req, res) => {
-  res.render('newPatient.ejs');
+  res.render('newPatient.ejs', {title:"OPD Management"});
 });
 
 router.post('/', async (req, res) => {
@@ -50,7 +50,7 @@ router.get('/:id/edit', async (req, res) => {
     if (!patient) {
       return res.status(404).send("Patient not found");
     }
-    res.render('editPatient.ejs', { patient });
+    res.render('editPatient.ejs', { patient , title:"OPD Management"});
   } catch (err) {
     console.error("Error fetching patient:", err);
     res.status(500).send("Internal Server Error");
@@ -88,7 +88,7 @@ router.post('/:id/delete', async (req, res) => {
 router.get('/departments', async (req, res) => {
   try {
     const data = await Department.find();
-    res.render('departments.ejs', { departments: data });
+    res.render('departments.ejs', { departments: data , title:"OPD Management"});
   } catch (err) {
     console.error("Error fetching departments:", err);
     res.status(500).send("Internal Server Error");

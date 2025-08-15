@@ -19,6 +19,7 @@ const bedSchema = new mongoose.Schema({
   admitDate: Date,
   dischargeDate: Date
 });
-const Bed = mongoose.model('Bed', bedSchema);
-module.exports = { Bed };
+// const Bed = mongoose.model('Bed', bedSchema);
+// module.exports = { Bed };
 
+module.exports = mongoose.models.Bed || mongoose.model("Bed", bedSchema);

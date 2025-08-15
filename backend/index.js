@@ -29,13 +29,13 @@ async function main() {
 
 // Root route
 app.get('/', (req, res) => {
-  res.redirect('/queue');
+  res.redirect('/dashboard');
 });
 
 app.use('/queue', queueRoutes);
 app.use('/beds', bedRoutes);
 app.use('/inventory', require('./routes/inventory.js'));
-
+app.use('/dashboard', require('./routes/dashboardRoutes.js'));
 
 
 

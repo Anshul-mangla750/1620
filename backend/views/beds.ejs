@@ -1,99 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Bed Management Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Bed Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    .occupied-badge { background-color: #f8d7da; color: #721c24; }
-    .available-badge { background-color: #d4edda; color: #155724; }
-    .critical { color: red; font-weight: bold; }
-    .stable { color: green; font-weight: bold; }
-    .card-outline { border-left: 5px solid #0d6efd; }
+    .card-bed { margin-bottom: 1rem; }
+    .badge-status { font-size: 0.9em; }
+    .dashboard-card { min-width: 180px; }
+    .bed-icon { background: #0d6efd1a; border-radius: 50%; padding: 0.7rem; }
   </style>
 </head>
 <body class="bg-light">
-
-<div class="container mt-4">
-  <h2 class="fw-bold mb-3">Bed Management</h2>
-
-  <!-- Stats -->
-  <div class="row text-center mb-4">
-    <div class="col"><div class="card card-outline"><div class="card-body"><h5>Total Beds</h5><p class="fs-4 fw-bold"><%= stats.total %></p></div></div></div>
-    <div class="col"><div class="card card-outline"><div class="card-body"><h5>Occupied</h5><p class="fs-4 text-danger fw-bold"><%= stats.occupied %></p></div></div></div>
-    <div class="col"><div class="card card-outline"><div class="card-body"><h5>Available</h5><p class="fs-4 text-success fw-bold"><%= stats.available %></p></div></div></div>
-    <div class="col"><div class="card card-outline"><div class="card-body"><h5>Occupancy</h5><p class="fs-4 text-primary fw-bold"><%= stats.occupancyRate %>%</p></div></div></div>
+<div class="container py-4">
+  <h2 class="mb-4 fw-bold">Bed Management</h2>
+  <!-- Dashboard Cards -->
+  <div class="row mb-4">
+    <div class="col dashboard-card">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <div class="fs-4 fw-bold"><%= beds.length %></div>
+          <div>Total Beds</div>
+        </div>
+      </div>
+    </div>
+    <div class="col dashboard-card">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <div class="fs-4 fw-bold text-danger">
+            <%= beds.filter(b => b.status === 'occupied').length %>
+          </div>
+          <div>Occupied Beds</div>
+        </div>
+      </div>
+    </div>
+    <div class="col dashboard-card">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <div class="fs-4 fw-bold text-success">
+            <%= beds.filter(b => b.status === 'available').length %>
+          </div>
+          <div>Available Beds</div>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <!-- Search & Filter -->
-  <form class="row mb-3" method="GET" action="/beds">
-    <div class="col-md-6">
-      <input type="text" class="form-control" name="search" placeholder="Search..." value="<%= filters.search %>">
-    </div>
-    <div class="col-md-3">
-      <select class="form-select" name="ward">
-        <option <%= filters.ward === 'All' ? 'selected' : '' %>>All</option>
-        <option <%= filters.ward === 'ICU' ? 'selected' : '' %>>ICU</option>
-        <option <%= filters.ward === 'General Ward' ? 'selected' : '' %>>General Ward</option>
-        <option <%= filters.ward === 'OPD' ? 'selected' : '' %>>OPD</option>
-      </select>
-    </div>
-    <div class="col-md-3">
-      <select class="form-select" name="status">
-        <option <%= filters.status === 'All' ? 'selected' : '' %>>All</option>
-        <option <%= filters.status === 'available' ? 'selected' : '' %>>Available</option>
-        <option <%= filters.status === 'occupied' ? 'selected' : '' %>>Occupied</option>
-      </select>
-    </div>
-    <div class="col-12 text-end mt-2">
-      <button class="btn btn-primary">Apply Filters</button>
-    </div>
-  </form>
-
+  <!-- Add Bed Button -->
+  <div class="d-flex justify-content-end mb-3">
+    <a href="/beds/new" class="btn btn-success">+ Add Bed</a>
+  </div>
   <!-- Bed Cards -->
   <% beds.forEach(bed => { %>
-    <div class="card mb-3">
-      <div class="card-body d-flex justify-content-between">
-        <div>
-          <h5><%= bed.bedId %> 
-            <% if (bed.status === 'occupied') { %>
-              <span class="badge occupied-badge">Occupied</span>
-            <% } else { %>
-              <span class="badge available-badge">Available</span>
-            <% } %>
-          </h5>
-          <p><%= bed.ward %> – <%= bed.floor %>, <%= bed.room %></p>
-
-          <% if (bed.status === 'occupied') { %>
-            <p> Patient: <%= bed.patient.name %> (ID: <%= bed.patient.id %>)</p>
-            <p> Doctor: <%= bed.doctor %></p>
-            <p> Condition: <%= bed.condition === 'Critical' ? '<span class="critical">Critical</span>' : '<span class="stable">Stable</span>' %></p>
-            <% if (bed.dischargeDate) { %>
-              <p> Discharge: <%= bed.dischargeDate.toISOString().split('T')[0] %></p>
-            <% } %>
-          <% } else { %>
-            <p class="text-success">Bed is available for allocation.</p>
-          <% } %>
+    <div class="card card-bed shadow-sm">
+      <div class="card-body d-flex align-items-center">
+        <div class="me-3">
+          <span class="bed-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#0d6efd" class="bi bi-hospital" viewBox="0 0 16 16">
+              <path d="M6.5.5a.5.5 0 0 1 .5.5v2h2V1a.5.5 0 0 1 1 0v2h2V1a.5.5 0 0 1 1 0v2h.5A1.5 1.5 0 0 1 15 4.5v10a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-10A1.5 1.5 0 0 1 2.5 3H3V1a.5.5 0 0 1 1 0v2h2V1a.5.5 0 0 1 .5-.5zm-4 4A.5.5 0 0 0 2 5v9h12V5a.5.5 0 0 0-.5-.5h-11zm2.5 2a.5.5 0 0 1 .5.5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 .5-.5z"/>
+            </svg>
+          </span>
         </div>
-        <div>
-          <% if (bed.status === 'occupied') { %>
-            <form action="/beds/discharge/<%= bed._id %>" method="POST">
-              <button class="btn btn-outline-danger">Discharge</button>
-            </form>
-          <% } else { %>
-            <form action="/beds/allocate/<%= bed._id %>" method="POST">
-              <input type="hidden" name="patientName" value="Test Patient">
-              <input type="hidden" name="patientId" value="TEMP<%= bed._id %>">
-              <input type="hidden" name="doctor" value="Dr. Test">
-              <input type="hidden" name="condition" value="Stable">
-              <input type="hidden" name="dischargeDate" value="<%= new Date().toISOString().split('T')[0] %>">
-              <button class="btn btn-success">Allocate</button>
-            </form>
-          <% } %>
+        <div class="flex-grow-1">
+          <div class="fw-bold fs-5"><%= bed.bedId %></div>
+          <div class="text-muted mb-1">
+            <span class="me-3"><i class="bi bi-building"></i> <%= bed.ward %> Ward</span>
+            <span class="me-3"><i class="bi bi-door-open"></i> Room <%= bed.room %></span>
+            <span><i class="bi bi-layers"></i> Floor <%= bed.floor %></span>
+          </div>
+          <div class="row">
+            <div class="col-auto">
+              <div class="small text-secondary">Status</div>
+              <span class="badge badge-status 
+                <% if(bed.status === 'available'){ %> bg-success <% } %>
+                <% if(bed.status === 'occupied'){ %> bg-danger <% } %>
+              ">
+                <%= bed.status %>
+              </span>
+            </div>
+            <div class="col-auto">
+              <div class="small text-secondary">Doctor</div>
+              <div class="fw-semibold"><%= bed.doctor || '-' %></div>
+            </div>
+            <div class="col-auto">
+              <div class="small text-secondary">Condition</div>
+              <div class="fw-semibold"><%= bed.condition || '-' %></div>
+            </div>
+            <% if(bed.status === 'occupied' && bed.patient) { %>
+            <div class="col-auto">
+              <div class="small text-secondary">Patient</div>
+              <div class="fw-semibold"><%= bed.patient.name %> (<%= bed.patient.id %>)</div>
+            </div>
+            <% } %>
+          </div>
+        </div>
+        <div class="ms-3 text-end">
+          <a href="/beds/<%= bed._id %>/edit" class="btn btn-outline-primary btn-sm mb-2">Edit</a><br>
+          <form action="/beds/<%= bed._id %>?_method=DELETE" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+          </form>
         </div>
       </div>
     </div>
   <% }) %>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap Icons CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </body>
 </html>

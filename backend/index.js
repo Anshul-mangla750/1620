@@ -1,71 +1,48 @@
 const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const connectDB = require('./config');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
-const path = require('path');
 const app = express();
-const authRoutes = require('./routes/auth');
-const dashboardRoutes = require('./routes/dashboard');
+const mongoose = require('mongoose');
+const { queueData, departments ,beds} = require('./data.js');
+const { Queue, Department } = require('./models/queue.js');
+const { Bed } = require('./models/bed.js');
+const path = require('path');
+const methodOverride = require('method-override');
 
-dotenv.config();
-
-
+app.use(methodOverride('_method'));
+app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs');
-app.set('views', './views');
-app.use(cors());
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'public')));
+const queueRoutes = require('./routes/queue.js');
+const bedRoutes = require('./routes/bed.js');
 
+main().catch(err => console.log(err));
 
-// session
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'keyboard cat',
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    ttl: 14 * 24 * 60 * 60 // 14 days
-  }),
-  cookie: {
-    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
-    httpOnly: true,
-    // secure: true  // enable when using HTTPS
+async function main() {
+  try {
+    await mongoose.connect('mongodb://127.0.0.1:27017/Medicure');
+    console.log("Connected to MongoDB");
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    process.exit(1);
   }
-}));
+}
 
-// routes
-app.use('/auth', authRoutes);
-app.use('/dashboard', dashboardRoutes);
-
-
-
-
-
-// MongoDB connection
-connectDB();
-
-
+// Root route
 app.get('/', (req, res) => {
-  if (req.session.userId) return res.redirect('/dashboard');
-  res.redirect('/auth/login');
+  res.redirect('/queue');
 });
 
-// Routes
-app.use('/beds', require('./routes/bedRoutes'));
-app.use('/doctors', require('./routes/doctorsRoute'));
-app.use('/appointments', require('./routes/appointments'));
-app.use('/patients', require('./routes/patientRoutes'));
-const inventoryRoutes = require('./routes/inventoryRoutes');
-app.use('/inventory', inventoryRoutes);
+app.use('/queue', queueRoutes);
+app.use('/beds', bedRoutes);
 
 
 
 
+ 
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+
+
+app.listen(3000, () => {
+    console.log(`Server is running on port 3000`);
+    }
+);

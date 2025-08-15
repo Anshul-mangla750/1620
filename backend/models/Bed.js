@@ -10,7 +10,7 @@ const bedSchema = new mongoose.Schema({
     enum: ['available', 'occupied'],
     default: 'available'
   },
-  patient: {
+  patient: { 
     name: String,
     id: String
   },
@@ -19,5 +19,6 @@ const bedSchema = new mongoose.Schema({
   admitDate: Date,
   dischargeDate: Date
 });
+const Bed = mongoose.model('Bed', bedSchema);
+module.exports = { Bed };
 
-module.exports = mongoose.model('Bed', bedSchema);

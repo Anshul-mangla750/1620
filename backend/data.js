@@ -105,5 +105,61 @@ const beds = [
 ];
 
 
+const inventoryData = [
+  {
+    itemId: "MED001",
+    name: "Paracetamol 500mg",
+    category: "Medicine",
+    stock: 120,
+    status: "In Stock",
+    unit: "Tablets",
+    last_updated: new Date(),
+    createdAt: new Date()
+  },
+  {
+    itemId: "MED002",
+    name: "Amoxicillin 250mg",
+    category: "Medicine",
+    stock: 20,
+    status: "Low Stock",
+    unit: "Capsules",
+    last_updated: new Date(),
+    createdAt: new Date()
+  },
+  {
+    itemId: "SUP001",
+    name: "Surgical Gloves",
+    category: "Supplies",
+    stock: 0,
+    status: "Out of Stock",
+    unit: "Pairs",
+    last_updated: new Date(),
+    createdAt: new Date()
+  },
+  {
+    itemId: "EQP001",
+    name: "Digital Thermometer",
+    category: "Equipment",
+    stock: 15,
+    status: "In Stock",
+    unit: "Pieces",
+    last_updated: new Date(),
+    createdAt: new Date()
+  },
+  {
+    itemId: "SUP002",
+    name: "Face Masks",
+    category: "Supplies",
+    stock: 50,
+    status: "In Stock",
+    unit: "Pieces",
+    last_updated: new Date(),
+    createdAt: new Date()
+  }
+];
 
-module.exports = { queueData, departments ,beds};
+
+
+
+
+module.exports = { queueData, departments ,beds, inventoryData };

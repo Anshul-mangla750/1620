@@ -34,6 +34,7 @@ app.get('/', (req, res) => {
 
 app.use('/queue', queueRoutes);
 app.use('/beds', bedRoutes);
+app.use('/inventory', require('./routes/inventory.js'));
 
 
 
